@@ -13,13 +13,15 @@ cursor.execute('''
     )
 ''')
 
-def add_post(image, text, user):
+def add_post(conn, image, text, user):
+    cursor = conn.cursor()
     cursor.execute("INSERT INTO posts (image, text, user) VALUES (?, ?, ?)", (image, text, user))
     conn.commit()
     print("Post added successfully!")
 
-def get_latest_post():
-    cursor.execute("SELECT * FROM posts ORDER BY timestamp DESC LIMIT 1")
+def get_latest_post(conn):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM posts ORDER BY timestamp DESC, id DESC LIMIT 1")
     post = cursor.fetchone()
     if post:
         return {
@@ -39,9 +41,9 @@ posts = [
 ]
 
 for post in posts:
-    add_post(post["image"], post["text"], post["user"])
+    add_post(conn, post["image"], post["text"], post["user"])
 
-latest_post = get_latest_post()
+latest_post = get_latest_post(conn)
 print("Latest post:", latest_post)
 
 conn.close()
