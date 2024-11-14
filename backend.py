@@ -47,3 +47,5 @@ latest_post = get_latest_post(conn)
 print("Latest post:", latest_post)
 
 conn.close()
+
+# testing test.yml
