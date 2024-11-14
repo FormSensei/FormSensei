@@ -3,10 +3,10 @@ name: Run Tests on Push
 on:
   push:
     branches:
-      - Feature-GithubActions     # You can specify other branches or use '*' to run on any branch push
+      - Feature GithubActions     # You can specify other branches or use '*' to run on any branch push
   pull_request:
     branches:
-      - Feature-GithubActions
+      - Feature GithubActions
 
 jobs:
   test:
