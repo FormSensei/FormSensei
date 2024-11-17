@@ -1,12 +1,12 @@
-name: Run Tests on Push
+name: Run Tests on Push on any brunch and Pull Requests for development
 
 on:
   push:
     branches:
-      - Feature-GithubActions     # You can specify other branches or use '*' to run on any branch push
+      - '*'     # You can specify other branches or use '*' to run on any branch push
   pull_request:
     branches:
-      - Feature-GithubActions
+      - development
 
 jobs:
   test:
