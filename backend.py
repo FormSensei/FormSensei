@@ -1,3 +1,5 @@
+# Can be deleted once tests are adapted
+
 import sqlite3
 
 conn = sqlite3.connect("posts.db")
