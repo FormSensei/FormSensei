@@ -1,0 +1,11 @@
+2024-11-20 22:15:19,905 - main - INFO - Initializing application
+2024-11-20 22:16:21,035 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 22:16:21,195 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 22:16:25,258 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 22:16:25,290 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 22:16:41,875 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 22:16:41,875 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:46:37,995 - main - INFO - Shutting down application
+2024-11-20 23:46:53,646 - main - INFO - Initializing application
+2024-11-20 23:47:19,343 - main - INFO - Shutting down application
+2024-11-20 23:47:27,275 - main - INFO - Initializing application

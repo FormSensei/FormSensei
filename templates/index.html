@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View all posts and submit your own!">
+    <meta name="keywords" content="posts, social media, user content">
+    <meta name="author" content="Your Name">
+    <title>Posts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Posts</h1>
+    {% if posts %}
+    <ul>
+        {% for post in posts %}
+        <li>
+            <strong>{{ post.user }}</strong>: {{ post.text }}<br>
+            <img src="{{ post.image }}" alt="Post image" style="width: 200px;">
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No posts available. Be the first to <a href="/submit">submit a new post</a>!</p>
+    {% endif %}
+    <a href="/submit" style="
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+        text-decoration: none;
+    ">Submit a New Post</a>
+</body>
+</html>
