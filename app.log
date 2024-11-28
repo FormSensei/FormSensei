@@ -42,3 +42,7 @@
 2024-11-20 23:54:19,784 - main - INFO - Endpoint: GET / (frontend)
 2024-11-20 23:54:19,810 - main - INFO - Listing posts, page: 1, limit: 10
 2024-11-21 00:00:18,814 - main - INFO - Shutting down application
+2024-11-28 17:48:24,250 - main - INFO - Initializing application
+2024-11-28 17:51:37,925 - main - INFO - Shutting down application
+2024-11-28 17:51:53,737 - main - INFO - Initializing application
+2024-11-28 17:52:08,157 - main - INFO - Shutting down application
