@@ -9,3 +9,36 @@
 2024-11-20 23:46:53,646 - main - INFO - Initializing application
 2024-11-20 23:47:19,343 - main - INFO - Shutting down application
 2024-11-20 23:47:27,275 - main - INFO - Initializing application
+2024-11-20 23:47:47,240 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:48:05,001 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 23:48:05,064 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:48:05,326 - main - INFO - Endpoint: GET /favicon.ico
+2024-11-20 23:48:08,448 - main - INFO - Endpoint: GET /submit (frontend)
+2024-11-20 23:49:14,417 - main - INFO - Endpoint: POST /submit (frontend)
+2024-11-20 23:49:14,439 - main - INFO - Endpoint: POST /posts
+2024-11-20 23:49:14,439 - main - INFO - Adding post: image='https://moodle.technikum-wien.at/pluginfile.php/2309361/mod_resource/content/1/01_REST.pdf' text='Marius sitnkt' user='MArkus'
+2024-11-20 23:49:14,599 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 23:49:14,611 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:49:16,896 - main - INFO - Endpoint: GET /submit (frontend)
+2024-11-20 23:49:18,728 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 23:49:18,745 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:50:02,493 - main - INFO - Endpoint: GET /submit (frontend)
+2024-11-20 23:50:02,765 - main - INFO - Endpoint: GET /favicon.ico
+2024-11-20 23:50:05,624 - main - INFO - Endpoint: POST /submit (frontend)
+2024-11-20 23:50:05,640 - main - INFO - Endpoint: POST /posts
+2024-11-20 23:50:05,641 - main - INFO - Adding post: image='data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' text='sad' user='asd'
+2024-11-20 23:50:05,706 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 23:50:05,715 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:53:36,807 - main - INFO - Endpoint: GET /submit (frontend)
+2024-11-20 23:53:43,065 - main - INFO - Endpoint: POST /submit (frontend)
+2024-11-20 23:53:43,081 - main - INFO - Endpoint: POST /posts
+2024-11-20 23:53:43,083 - main - INFO - Adding post: image='https://via.placeholder.com/150' text='grey dot' user='greygang'
+2024-11-20 23:53:43,213 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 23:53:43,228 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-20 23:54:00,543 - main - INFO - Endpoint: GET /submit (frontend)
+2024-11-20 23:54:19,695 - main - INFO - Endpoint: POST /submit (frontend)
+2024-11-20 23:54:19,711 - main - INFO - Endpoint: POST /posts
+2024-11-20 23:54:19,712 - main - INFO - Adding post: image='https://via.placeholder.com/150' text='alejandro stinkt' user='pigeongang'
+2024-11-20 23:54:19,784 - main - INFO - Endpoint: GET / (frontend)
+2024-11-20 23:54:19,810 - main - INFO - Listing posts, page: 1, limit: 10
+2024-11-21 00:00:18,814 - main - INFO - Shutting down application
