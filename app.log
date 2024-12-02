@@ -253,3 +253,30 @@
 2024-12-02 20:18:36,660 - main - INFO - Shutting down application
 2024-12-02 20:20:36,133 - main - INFO - Initializing application
 2024-12-02 20:21:45,126 - main - INFO - Shutting down application
+2024-12-02 19:22:25,860 - main - INFO - Initializing application
+2024-12-02 19:25:24,008 - main - INFO - Shutting down application
+2024-12-02 21:13:06,850 - main - INFO - Initializing application
+2024-12-02 21:13:07,044 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 21:13:07,057 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 21:13:07,067 - main - INFO - Fetching comments for post ID: 5
+2024-12-02 21:13:07,077 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 21:13:07,091 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 21:13:07,102 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 21:13:07,104 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 21:13:15,442 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 21:13:25,011 - main - INFO - Payload sent to /posts: {'image': '/uploads/Unbenannt.PNG', 'text': 'unbenannt', 'user': 'unbenannt'}
+2024-12-02 21:19:56,282 - main - INFO - Initializing application
+2024-12-02 21:25:01,938 - main - INFO - Shutting down application
+2024-12-02 21:25:04,528 - main - INFO - Initializing application
+2024-12-02 21:25:56,317 - main - INFO - Shutting down application
+2024-12-02 21:25:59,237 - main - INFO - Initializing application
+2024-12-02 21:27:25,231 - main - INFO - Shutting down application
+2024-12-02 21:27:29,976 - main - INFO - Initializing application
+2024-12-02 21:28:43,248 - main - INFO - Initializing application
+2024-12-02 21:30:22,185 - main - INFO - Initializing application
+2024-12-02 21:30:22,472 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 21:30:22,488 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 21:30:22,488 - main - ERROR - Error fetching posts: 500
+2024-12-02 21:30:25,011 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 21:30:34,208 - main - INFO - Payload sent to /posts: {'image': '/uploads/Unbenannt.PNG', 'text': 'a', 'user': 'a'}
+2024-12-03 00:34:43,768 - main - INFO - Initializing application

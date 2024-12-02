@@ -66,14 +66,19 @@ def get_post(id: int, db=Depends(get_db)):
     return post
 
 @app.get("/posts", response_model=List[PostResponse])
-def list_posts( 
+def list_posts(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
     db=Depends(get_db)
 ):
-    logger.info(f"Listing posts, page: {page}, limit: {limit}")
-
-    return PostService.list_posts(db, page, limit)
+    logger.info(f"Entering /posts endpoint with page={page}, limit={limit}")
+    try:
+        posts = PostService.list_posts(db, page, limit)
+        logger.info(f"Posts retrieved: {len(posts)}")
+        return posts
+    except Exception as e:
+        logger.error(f"Error in /posts: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching posts")
 
 @app.post("/users", response_model=UserResponse, status_code=201)
 def create_user(user: UserCreate, db=Depends(get_db)):
