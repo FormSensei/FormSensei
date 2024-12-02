@@ -46,3 +46,210 @@
 2024-11-28 17:51:37,925 - main - INFO - Shutting down application
 2024-11-28 17:51:53,737 - main - INFO - Initializing application
 2024-11-28 17:52:08,157 - main - INFO - Shutting down application
+2024-12-02 18:50:22,318 - main - INFO - Initializing application
+2024-12-02 18:50:26,927 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:50:26,986 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:50:27,024 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:50:27,409 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:50:27,458 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:50:27,496 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:50:43,457 - main - INFO - Adding comment via frontend: post_id=4, user=Your mom
+2024-12-02 18:50:43,472 - main - INFO - Adding comment: post_id=4 text='sucks' user='Your mom'
+2024-12-02 18:50:43,530 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:50:43,544 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:50:43,561 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:50:43,606 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:50:43,640 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:50:43,686 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:51:13,197 - main - INFO - Adding comment via frontend: post_id=1, user=fridolin
+2024-12-02 18:51:13,219 - main - INFO - Adding comment: post_id=1 text='fridolin auch' user='fridolin'
+2024-12-02 18:51:13,262 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:51:13,262 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:51:13,296 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:51:13,334 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:51:13,361 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:51:13,404 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:51:23,246 - main - INFO - Adding comment via frontend: post_id=4, user=hi
+2024-12-02 18:51:23,246 - main - INFO - Adding comment: post_id=4 text='ha' user='hi'
+2024-12-02 18:51:23,305 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:51:23,305 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:51:23,326 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:51:23,371 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:51:23,412 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:51:23,446 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:51:27,734 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:51:27,750 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:51:27,765 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:51:27,797 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:51:27,902 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:51:27,948 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:51:32,869 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 18:51:34,905 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:51:34,905 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:51:34,923 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:51:34,958 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:51:34,998 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:51:35,034 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:51:59,597 - main - INFO - Shutting down application
+2024-12-02 18:58:16,507 - main - INFO - Initializing application
+2024-12-02 18:58:16,870 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:58:16,870 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:58:16,899 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:58:16,936 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:58:16,971 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:58:16,995 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:58:48,788 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 18:58:48,897 - main - INFO - Endpoint: GET /favicon.ico
+2024-12-02 18:58:51,125 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 18:58:51,141 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 18:58:51,166 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 18:58:51,207 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 18:58:51,252 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 18:58:51,296 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 18:59:13,395 - main - INFO - Shutting down application
+2024-12-02 19:05:10,753 - main - INFO - Initializing application
+2024-12-02 19:05:27,903 - main - INFO - Initializing application
+2024-12-02 19:05:29,326 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:05:29,356 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:05:29,372 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:05:29,383 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:05:29,397 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:05:29,413 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:05:33,020 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:05:33,036 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:05:33,047 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:05:33,065 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:05:33,088 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:05:33,114 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:05:37,757 - main - INFO - Adding comment via frontend: post_id=4, user=asd
+2024-12-02 19:05:37,757 - main - INFO - Adding comment: post_id=4 text='asd' user='asd'
+2024-12-02 19:05:37,801 - main - INFO - Comment added successfully via frontend
+2024-12-02 19:05:37,817 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:05:37,826 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:05:37,843 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:05:37,853 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:05:37,872 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:05:37,889 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:05:42,376 - main - INFO - Shutting down application
+2024-12-02 19:19:37,146 - main - INFO - Initializing application
+2024-12-02 19:19:37,903 - main - INFO - Adding comment via frontend: post_id=4, user=asdd
+2024-12-02 19:19:37,919 - main - INFO - Adding comment: post_id=4 text='asdas' user='asdd'
+2024-12-02 19:19:37,942 - main - INFO - Comment added successfully via frontend
+2024-12-02 19:19:37,959 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:19:37,969 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:19:37,984 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:19:38,003 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:19:38,026 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:19:38,044 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:19:56,999 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:22:30,686 - main - INFO - Shutting down application
+2024-12-02 19:30:44,906 - main - INFO - Initializing application
+2024-12-02 19:30:48,401 - main - INFO - Initializing application
+2024-12-02 19:31:09,167 - main - INFO - Initializing application
+2024-12-02 19:31:12,742 - main - INFO - Shutting down application
+2024-12-02 19:33:09,261 - main - INFO - Initializing application
+2024-12-02 19:33:10,316 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:33:10,324 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:33:10,343 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:33:10,358 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:33:10,375 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:33:10,395 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:33:14,850 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:34:19,415 - main - INFO - Endpoint: POST /submit (frontend)
+2024-12-02 19:38:06,007 - main - INFO - Initializing application
+2024-12-02 19:38:07,620 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:38:07,636 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:38:07,701 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:38:07,719 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:38:07,750 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:38:07,780 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:38:14,352 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:38:21,277 - main - INFO - Endpoint: POST /submit (frontend)
+2024-12-02 19:41:24,574 - main - INFO - Initializing application
+2024-12-02 19:41:24,876 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:41:24,891 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:41:24,906 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:41:24,917 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:41:24,929 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:41:24,948 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:41:29,900 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:41:37,790 - main - INFO - Endpoint: POST /submit (frontend)
+2024-12-02 19:47:17,599 - main - INFO - Initializing application
+2024-12-02 19:47:29,265 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:47:29,307 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:47:29,329 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:47:29,350 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:47:29,361 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:47:29,395 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:47:33,088 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:48:28,172 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:48:31,303 - main - INFO - Endpoint: POST /submit (frontend)
+2024-12-02 19:48:31,303 - main - INFO - Saving uploaded image to uploads\testImageWebsite.PNG
+2024-12-02 19:48:31,303 - main - INFO - Sending post data to backend: image=uploads\testImageWebsite.PNG, text=aasdsadsasd, user=asdssa
+2024-12-02 19:55:25,710 - main - INFO - Initializing application
+2024-12-02 19:55:25,908 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:55:25,913 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:55:25,913 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:55:25,934 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:55:25,951 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:55:25,963 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:55:47,348 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:55:47,364 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:55:47,374 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:55:47,390 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:55:47,396 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:55:47,416 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:57:12,383 - main - INFO - Shutting down application
+2024-12-02 19:57:16,828 - main - INFO - Initializing application
+2024-12-02 19:57:28,142 - main - INFO - Initializing application
+2024-12-02 19:57:32,307 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 19:57:32,326 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 19:57:32,337 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 19:57:32,384 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 19:57:32,399 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 19:57:32,419 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 19:57:36,462 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 19:57:45,881 - main - INFO - Endpoint: POST /submit (frontend)
+2024-12-02 19:57:45,881 - main - INFO - Saving uploaded image to uploads\testImageWebsite.PNG
+2024-12-02 19:57:45,881 - main - INFO - Sending post data to backend: image=uploads\testImageWebsite.PNG, text=asdasda, user=asd
+2024-12-02 20:03:09,039 - main - INFO - Initializing application
+2024-12-02 20:03:09,271 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 20:03:09,287 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 20:03:09,304 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 20:03:09,319 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 20:03:09,337 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 20:03:09,353 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 20:03:09,379 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 20:03:09,388 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 20:03:09,416 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 20:03:09,420 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 20:03:09,437 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 20:03:09,453 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 20:03:15,077 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 20:03:15,092 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 20:03:15,103 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 20:03:15,111 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 20:03:15,128 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 20:03:15,142 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 20:03:36,492 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 20:04:43,429 - main - INFO - Shutting down application
+2024-12-02 20:11:58,757 - main - INFO - Initializing application
+2024-12-02 20:12:39,812 - main - INFO - POST /posts called with data: image='/uploads/testImageWebsite.PNG' text='asdasda' user='asd'
+2024-12-02 20:12:39,828 - main - INFO - Post successfully added with ID: 5
+2024-12-02 20:13:52,164 - main - INFO - Endpoint: GET / (frontend)
+2024-12-02 20:13:52,180 - main - INFO - Listing posts, page: 1, limit: 10
+2024-12-02 20:13:52,196 - main - INFO - Fetching comments for post ID: 5
+2024-12-02 20:13:52,212 - main - INFO - Fetching comments for post ID: 4
+2024-12-02 20:13:52,227 - main - INFO - Fetching comments for post ID: 3
+2024-12-02 20:13:52,249 - main - INFO - Fetching comments for post ID: 2
+2024-12-02 20:13:52,265 - main - INFO - Fetching comments for post ID: 1
+2024-12-02 20:13:57,613 - main - INFO - Endpoint: GET /submit (frontend)
+2024-12-02 20:14:23,176 - main - INFO - Endpoint: POST /submit (frontend)
+2024-12-02 20:14:23,176 - main - INFO - Saving uploaded image to uploads\Unbenannt.PNG
+2024-12-02 20:14:23,176 - main - INFO - Sending post data to backend: image=uploads\Unbenannt.PNG, text=test2, user=test2
+2024-12-02 20:16:27,788 - main - INFO - Initializing application
+2024-12-02 20:17:43,796 - main - INFO - Shutting down application
+2024-12-02 20:17:48,656 - main - INFO - Initializing application
+2024-12-02 20:18:36,660 - main - INFO - Shutting down application
+2024-12-02 20:20:36,133 - main - INFO - Initializing application
+2024-12-02 20:21:45,126 - main - INFO - Shutting down application

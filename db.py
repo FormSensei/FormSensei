@@ -8,6 +8,8 @@ def get_db():
 async def init_db():
     conn = get_db()
     cursor = conn.cursor()
+
+    # Create posts table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,6 +19,8 @@ async def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    # Create users table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +29,20 @@ async def init_db():
             password TEXT
         )
     ''')
+
+    # Create comments table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            text TEXT NOT NULL,
+            user TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (post_id) REFERENCES posts (id)
+        )
+    ''')
+
     conn.commit()
     conn.close()
+
 

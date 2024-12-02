@@ -7,6 +7,12 @@ from services.post_service import PostService
 from schemas.user_schema import UserCreate, UserResponse
 from services.user_service import UserService
 from contextlib import asynccontextmanager
+from schemas.comment_schema import CommentCreate, CommentResponse
+from services.comment_service import CommentService
+from fastapi import File, UploadFile
+import shutil
+import os
+from fastapi.staticfiles import StaticFiles
 
 # For Frontend
 from fastapi import FastAPI, Request, Form
@@ -38,13 +44,17 @@ async def lifespan(app: FastAPI):
     #await close_db()
 
 app = FastAPI(lifespan=lifespan)
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.post("/posts", response_model=PostResponse, status_code=201)
 def create_post(post: PostCreate, db=Depends(get_db)):
-    logger.info("Endpoint: POST /posts")
-    logger.info(f"Adding post: {post}")
+    logger.info(f"POST /posts called with data: {post}")
     post_id = PostService.add_post(db, post)
-    return {"id": post_id, **post.mdoel_dump(), "timestamp": "now"}
+    logger.info(f"Post successfully added with ID: {post_id}")
+    return {"id": post_id, **post.model_dump(), "timestamp": "now"}
 
 @app.get("/posts/{id}", response_model=PostResponse)
 def get_post(id: int, db=Depends(get_db)):
@@ -93,27 +103,66 @@ def search_users(
     logger.info(f"Searching users, username: {username}, email: {email}, page: {page}, limit: {limit}")
     return UserService.search_users(db, username, email, page, limit)
 
+
+# comments
+
+@app.post("/comments", response_model=CommentResponse, status_code=201)
+def create_comment(comment: CommentCreate, db=Depends(get_db)):
+    logger.info(f"Adding comment: {comment}")
+    comment_id = CommentService.add_comment(db, comment)
+    return {"id": comment_id, **comment.dict(), "timestamp": "now"}
+
+@app.get("/comments/{post_id}", response_model=List[CommentResponse])
+def get_comments(post_id: int, db=Depends(get_db)):
+    logger.info(f"Fetching comments for post ID: {post_id}")
+    return CommentService.get_comments_by_post(db, post_id)
+
+
 # For Frontend
 # Initialize templates
 templates = Jinja2Templates(directory="templates")
 
+#modified for comments
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
     logger.info("Endpoint: GET / (frontend)")
     try:
-        # Fetch posts from the backend API
+        # Fetch posts and their comments
         response = requests.get('http://127.0.0.1:8000/posts')
         if response.status_code == 200:
             posts = response.json()
+            for post in posts:
+                # Fetch comments for each post
+                comments_response = requests.get(f"http://127.0.0.1:8000/comments/{post['id']}")
+                if comments_response.status_code == 200:
+                    post['comments'] = comments_response.json()
+                else:
+                    post['comments'] = []
         else:
-            logger.error(f"Error fetching posts: {e}")
+            logger.error(f"Error fetching posts: {response.status_code}")
             posts = []
     except Exception as e:
-        print(f"Error fetching posts: {e}")
+        logger.error(f"Error fetching posts: {e}")
         posts = []
     
-    # Render the index.html template with the posts data
+    # Render the template with posts and comments
     return templates.TemplateResponse("index.html", {"request": request, "posts": posts})
+
+
+@app.post("/add-comment")
+def add_comment(post_id: int = Form(...), text: str = Form(...), user: str = Form(...)):
+    logger.info(f"Adding comment via frontend: post_id={post_id}, user={user}")
+    try:
+        response = requests.post(
+            'http://127.0.0.1:8000/comments',
+            json={"post_id": post_id, "text": text, "user": user}
+        )
+        if response.status_code == 201:
+            logger.info("Comment added successfully via frontend")
+    except Exception as e:
+        logger.error(f"Error adding comment via frontend: {e}")
+    
+    return RedirectResponse("/", status_code=303)
 
 @app.get("/submit", response_class=HTMLResponse)
 def submit_post_form(request: Request):
@@ -122,27 +171,33 @@ def submit_post_form(request: Request):
     return templates.TemplateResponse("submit.html", {"request": request})
 
 @app.post("/submit")
-def submit_post(image: str = Form(...), text: str = Form(...), user: str = Form(...)):
-    logger.info("Endpoint: POST /submit (frontend)")
+async def submit_post(
+    image: UploadFile = File(...),
+    text: str = Form(...),
+    user: str = Form(...)
+):
     try:
-        # Send post data to the backend API
-        response = requests.post(
-            'http://127.0.0.1:8000/posts',
-            json={"image": image, "text": text, "user": user}
-        )
-        if response.status_code == 201:
-            logger.info("Post submitted successfully via frontend")
-            print("Post successfully created!")
-    except Exception as e:
-        logger.error(f"Error submitting post: {e}")
-        print(f"Error submitting post: {e}")
-    
-    # Redirect to the home page after submitting
-    return RedirectResponse("/", status_code=303)
+        # Save the uploaded image
+        image_path = os.path.join(UPLOAD_DIR, image.filename)
+        with open(image_path, "wb") as f:
+            shutil.copyfileobj(image.file, f)
 
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    logger.info("Endpoint: GET /favicon.ico")
-    return JSONResponse(content={}, status_code=204)
+        # Prepare payload
+        payload = {"image": f"/uploads/{image.filename}", "text": text, "user": user}
+        logger.info(f"Payload sent to /posts: {payload}")
+
+        # Send the data to /posts
+        response = requests.post('http://127.0.0.1:8000/posts', json=payload)
+        logger.info(f"Backend /posts response: {response.status_code}, {response.text}")
+
+        if response.status_code != 201:
+            logger.error(f"Error from /posts: {response.text}")
+            raise HTTPException(status_code=500, detail=f"Backend error: {response.text}")
+
+    except Exception as e:
+        logger.error(f"Error in /submit: {e}")
+        raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
+
+    return RedirectResponse("/", status_code=303)
 
 # End frontend
