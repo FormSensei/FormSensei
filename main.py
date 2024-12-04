@@ -21,6 +21,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 import requests
 import logging
+import httpx
 
 # Setup logging
 logging.basicConfig(
@@ -192,7 +193,8 @@ async def submit_post(
         logger.info(f"Payload sent to /posts: {payload}")
 
         # Send the data to /posts
-        response = requests.post('http://127.0.0.1:8000/posts', json=payload)
+        async with httpx.AsyncClient() as client:
+            response = await client.post('http://127.0.0.1:8000/posts', json=payload)
         logger.info(f"Backend /posts response: {response.status_code}, {response.text}")
 
         if response.status_code != 201:
