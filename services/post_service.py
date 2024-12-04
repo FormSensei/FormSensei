@@ -25,16 +25,16 @@ class PostService:
             return PostResponse(**row)
         return None
 
-@staticmethod
-def list_posts(db: Connection, page: int, limit: int) -> List[PostResponse]:
-    offset = (page - 1) * limit
-    logger.info(f"Fetching posts from DB with offset={offset}, limit={limit}")
-    try:
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM posts ORDER BY timestamp DESC LIMIT ? OFFSET ?", (limit, offset))
-        rows = cursor.fetchall()
-        logger.info(f"Posts fetched from DB: {rows}")
-        return [PostResponse(**row) for row in rows]
-    except Exception as e:
-        logger.error(f"Error querying posts from DB: {e}")
-        raise
+    @staticmethod
+    def list_posts(db: Connection, page: int, limit: int) -> List[PostResponse]:
+        offset = (page - 1) * limit
+        logger.info(f"Fetching posts from DB with offset={offset}, limit={limit}")
+        try:
+            cursor = db.cursor()
+            cursor.execute("SELECT * FROM posts ORDER BY timestamp DESC LIMIT ? OFFSET ?", (limit, offset))
+            rows = cursor.fetchall()
+            logger.info(f"Posts fetched from DB: {len(rows)}")
+            return [PostResponse(**row) for row in rows]
+        except Exception as e:
+            logger.error(f"Error querying posts from DB: {e}")
+            raise
