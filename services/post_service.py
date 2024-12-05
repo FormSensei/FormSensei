@@ -31,7 +31,7 @@ class PostService:
         logger.info(f"Fetching posts from DB with offset={offset}, limit={limit}")
         try:
             cursor = db.cursor()
-            cursor.execute("SELECT * FROM posts ORDER BY timestamp DESC LIMIT ? OFFSET ?", (limit, offset))
+            cursor.execute("SELECT * FROM posts ORDER BY time_created DESC LIMIT ? OFFSET ?", (limit, offset))
             rows = cursor.fetchall()
             logger.info(f"Posts fetched from DB: {len(rows)}")
             return [PostResponse(**row) for row in rows]

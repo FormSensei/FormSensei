@@ -16,7 +16,7 @@ async def init_db():
             image TEXT,
             text TEXT,
             user TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            time_created DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
@@ -37,7 +37,7 @@ async def init_db():
             post_id INTEGER NOT NULL,
             text TEXT NOT NULL,
             user TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            time_created DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (post_id) REFERENCES posts (id)
         )
     ''')
