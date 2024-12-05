@@ -55,7 +55,7 @@
                 {% for comment in post.comments %}
                 <li>
                     <strong>{{ comment.user }}</strong>: {{ comment.text }}
-                    <small>{{ comment.timestamp }}</small>
+                    <small>{{ comment.time_created }}</small>
                 </li>
                 {% endfor %}
             </ul>

@@ -8,4 +8,4 @@ class CommentCreate(BaseModel):
 
 class CommentResponse(CommentCreate):
     id: int
-    timestamp: str
+    time_created: str

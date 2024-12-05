@@ -16,6 +16,6 @@ class CommentService:
     @staticmethod
     def get_comments_by_post(db: Connection, post_id: int) -> List[CommentResponse]:
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM comments WHERE post_id = ? ORDER BY timestamp ASC", (post_id,))
+        cursor.execute("SELECT * FROM comments WHERE post_id = ? ORDER BY time_created ASC", (post_id,))
         rows = cursor.fetchall()
         return [CommentResponse(**row) for row in rows]

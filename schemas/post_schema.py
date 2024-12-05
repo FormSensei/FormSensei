@@ -1,14 +1,20 @@
 from pydantic import BaseModel
-from typing import Optional
 
 class PostCreate(BaseModel):
-    image: str
-    text: str
     user: str
+    text: str
+    image: str
+    id: int
+
+class PostBase(BaseModel):
+    user: str
+    text: str
+    image: str
+
 
 class PostResponse(BaseModel):
     id: int
-    image: str
-    text: str
     user: str
-    timestamp: str
+    text: str
+    image: str
+    time_created: str
