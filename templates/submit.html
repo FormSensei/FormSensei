@@ -46,16 +46,16 @@
 </head>
 <body>
     <h1>Submit a New Post</h1>
-    <form method="post" action="/submit">
-        <label for="image">Image URL:</label>
-        <input type="text" id="image" name="image" required>
-
+    <form method="post" action="/submit" enctype="multipart/form-data">
+        <label for="image">Upload Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+    
         <label for="text">Text:</label>
         <input type="text" id="text" name="text" required>
-
+    
         <label for="user">User:</label>
         <input type="text" id="user" name="user" required>
-
+    
         <button type="submit">Submit</button>
     </form>
     <a href="/">Back to posts</a>
