@@ -19,6 +19,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
 import requests
 import logging
 import httpx
@@ -49,6 +50,8 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+app.add_middleware(SessionMiddleware, secret_key="test123", max_age=None)
 
 # posts
 
@@ -106,7 +109,7 @@ def list_posts(
 
 # users
 
-@app.post("/ai/v1/user", response_model=UserResponse, status_code=201)
+@app.post("/api/v1/user", response_model=UserResponse, status_code=201)
 def create_user(user: UserCreate, db=Depends(get_db)):
     logger.info(f"Adding user: {user}")
     try:
@@ -188,16 +191,20 @@ def read_root(request: Request):
         posts = []
     
     # Render the template with posts and comments
-    return templates.TemplateResponse("index.html", {"request": request, "posts": posts})
+    is_logged_in = False
+    if request.session.get("user"):
+        is_logged_in = True
+    return templates.TemplateResponse("index.html", {"request": request, "posts": posts, "is_logged_in": is_logged_in})
 
 
 @app.post("/add-comment")
-def add_comment(post_id: int = Form(...), text: str = Form(...), user: str = Form(...)):
+def add_comment(request: Request, post_id: int = Form(...), text: str = Form(...)):
+    user = request.session.get("user")
     logger.info(f"Adding comment via frontend: post_id={post_id}, user={user}")
     try:
         response = requests.post(
             'http://127.0.0.1:8000/api/v1/comment',
-            json={"post_id": post_id, "text": text, "user": user}
+            json={"post_id": post_id, "text": text, "user": request.session.get("user")}
         )
         if response.status_code == 201:
             logger.info("Comment added successfully via frontend")
@@ -214,9 +221,9 @@ def submit_post_form(request: Request):
 
 @app.post("/submit")
 async def submit_post(
+    request: Request,
     image: UploadFile = File(...),
-    text: str = Form(...),
-    user: str = Form(...)
+    text: str = Form(...)
 ):
     try:
         # Save the uploaded image
@@ -225,7 +232,7 @@ async def submit_post(
             shutil.copyfileobj(image.file, f)
 
         # Prepare payload
-        payload = {"image": f"/uploads/{image.filename}", "text": text, "user": user}
+        payload = {"image": f"/uploads/{image.filename}", "text": text, "user": request.session.get("user")}
         logger.info(f"Payload sent to /posts: {payload}")
 
         # Send the data to /post
@@ -241,6 +248,41 @@ async def submit_post(
         logger.error(f"Error in /submit: {e}")
         raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
 
+    return RedirectResponse("/", status_code=303)
+
+@app.get("/login", response_class=HTMLResponse)
+def login_form(request: Request):
+    logger.info("Endpoint: GET /login (frontend)")
+    # Render the submit.html form
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    logger.info("Endpoint: POST /login (frontend)")
+    user = UserService.authenticate_user(get_db(),username, password)
+    if not user:
+        return templates.TemplateResponse("login.html", {"request": request, "login_error": "Invalid username or password."})
+    request.session["user"] = username
+    return RedirectResponse("/", status_code=303)
+
+@app.post("/register")
+async def login(username: str = Form(...), password: str = Form(...), email: str = Form(...)):
+    logger.info("Endpoint: POST /register (frontend)")
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                'http://127.0.0.1:8000/api/v1/user',
+                json={"username": username, "email": email, "password": password}
+            )
+
+        if response.status_code != 201:
+            logger.error(f"Error from /user: {response.text}")
+            raise HTTPException(status_code=500, detail=f"Backend error: {response.text}")
+        
+    except Exception as e:
+        logger.error(f"Error in /login: {e}")
+        raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
+    
     return RedirectResponse("/", status_code=303)
 
 # End frontend

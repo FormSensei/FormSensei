@@ -45,3 +45,13 @@ class UserService:
         cursor.execute(query, tuple(params))
         rows = cursor.fetchall()
         return [UserResponse(**row) for row in rows]
+    
+    @staticmethod
+    def authenticate_user(db: Connection, username: str, password: str):
+        cursor = db.cursor()
+        try:
+            cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+            row = cursor.fetchone()
+            return row[0] == password
+        except Exception as e:
+            return False
