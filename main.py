@@ -266,7 +266,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
     return RedirectResponse("/", status_code=303)
 
 @app.post("/register")
-async def login(username: str = Form(...), password: str = Form(...), email: str = Form(...)):
+async def login(request: Request, username: str = Form(...), password: str = Form(...), email: str = Form(...)):
     logger.info("Endpoint: POST /register (frontend)")
     try:
         async with httpx.AsyncClient() as client:
@@ -283,6 +283,8 @@ async def login(username: str = Form(...), password: str = Form(...), email: str
         logger.error(f"Error in /login: {e}")
         raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
     
+    request.session["user"] = username
+
     return RedirectResponse("/", status_code=303)
 
 # End frontend
