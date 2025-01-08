@@ -1,0 +1,11 @@
+# SQLite Database
+*.db
+
+# pycache
+__pycache__
+
+# app log
+app.log
+
+# uploads
+uploads

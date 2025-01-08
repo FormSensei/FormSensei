@@ -1,0 +1,36 @@
+version: "3.9"  # Docker Compose file format version
+services:        # Define the services (containers)  
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: postgres -c log_statement=all
+
+  fastapi-app:   # Name of the service
+    build:       # Build the Docker image
+      context: . # Use the current directory as the build context
+      dockerfile: Dockerfile # Use the specified Dockerfile
+    ports:       # Map ports between host and container
+      - "8000:8000" # Map port 8000 on the host to port 8000 in the container
+    volumes:     # Bind-mount local files into the container
+      - .:/app   # Mount the current directory into the container at /app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: # Correctly placed at the same level as depends_on
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Override default CMD
+  
+volumes:
+  db_data:

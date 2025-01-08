@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login or register to access posts and features.">
+    <meta name="keywords" content="login, register, authentication">
+    <meta name="author" content="Mar-Dam">
+    <title>Login or Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login or Register</h1>
+
+    <!-- Login Form -->
+    <form method="post" action="/login">
+        <h2>Login</h2>
+        {% if login_error %}
+        <p class="error">{{ login_error }}</p>
+        {% endif %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Registration Form -->
+    <form method="post" action="/register">
+        <h2>Register</h2>
+        {% if register_error %}
+        <p class="error">{{ register_error }}</p>
+        {% endif %}
+        <label for="reg_username">Username:</label>
+        <input type="text" id="reg_username" name="username" placeholder="Choose a username" required>
+
+        <label for="reg_password">Password:</label>
+        <input type="password" id="reg_password" name="password" placeholder="Choose a password" required>
+
+        <label for="reg_email">Email:</label>
+        <input type="email" id="reg_email" name="email" placeholder="Enter your email" required>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>

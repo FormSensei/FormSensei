@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View all posts and submit your own!">
+    <meta name="keywords" content="posts, social media, user content">
+    <meta name="author" content="Your Name">
+    <title>Posts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    {% if is_logged_in %}
+    <h1>All Posts</h1>
+    {% if posts %}
+    <ul>
+        {% for post in posts %}
+        <li>
+            <strong>{{ post.username }}</strong>: {{ post.text }}<br> <!-- Corrected "user" to "username" -->
+            <img src="{{ post.image }}" alt="Post image" style="width: 200px;">
+        
+            <!-- Display Comments -->
+            <h3>Comments</h3>
+            <ul>
+                {% for comment in post.comments %}
+                <li>
+                    <strong>{{ comment.username }}</strong>: {{ comment.text }} <!-- Corrected "user" to "username" -->
+                    <small>{{ comment.time_created }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        
+            <!-- Add Comment Form -->
+            <form method="post" action="/add-comment">
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <input type="text" name="text" placeholder="Write a comment..." required>
+                <button type="submit">Add Comment</button>
+            </form>
+        </li>
+        {% endfor %}        
+    </ul>
+    {% else %}
+    <p>No posts available. Be the first to <a href="/submit">submit a new post</a>!</p>
+    {% endif %}
+    <a href="/submit" style="
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+        text-decoration: none;
+    ">Submit a New Post</a>
+    {% else %}
+    <h1>Welcome</h1>
+    <p>Please <a href="/login">log in</a> to view posts and interact with the content.</p>
+    {% endif %}
+</body>
+</html>
