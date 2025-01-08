@@ -47,7 +47,7 @@
     <ul>
         {% for post in posts %}
         <li>
-            <strong>{{ post.user }}</strong>: {{ post.text }}<br>
+            <strong>{{ post.username }}</strong>: {{ post.text }}<br> <!-- Corrected "user" to "username" -->
             <img src="{{ post.image }}" alt="Post image" style="width: 200px;">
         
             <!-- Display Comments -->
@@ -55,7 +55,7 @@
             <ul>
                 {% for comment in post.comments %}
                 <li>
-                    <strong>{{ comment.user }}</strong>: {{ comment.text }}
+                    <strong>{{ comment.username }}</strong>: {{ comment.text }} <!-- Corrected "user" to "username" -->
                     <small>{{ comment.time_created }}</small>
                 </li>
                 {% endfor %}
