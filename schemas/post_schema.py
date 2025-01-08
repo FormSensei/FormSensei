@@ -1,20 +1,21 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class PostCreate(BaseModel):
-    user: str
+    username: str
     text: str
     image: str
     id: int
 
 class PostBase(BaseModel):
-    user: str
+    username: str
     text: str
     image: str
 
 
 class PostResponse(BaseModel):
     id: int
-    user: str
+    username: str
     text: str
     image: str
-    time_created: str
+    time_created: datetime

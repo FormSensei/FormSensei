@@ -204,7 +204,7 @@ def add_comment(request: Request, post_id: int = Form(...), text: str = Form(...
     try:
         response = requests.post(
             'http://127.0.0.1:8000/api/v1/comment',
-            json={"post_id": post_id, "text": text, "user": request.session.get("user")}
+            json={"post_id": post_id, "text": text, "username": request.session.get("username")}
         )
         if response.status_code == 201:
             logger.info("Comment added successfully via frontend")
@@ -225,6 +225,11 @@ async def submit_post(
     image: UploadFile = File(...),
     text: str = Form(...)
 ):
+    username = request.session.get("username")
+    if not username:
+        logger.error("User is not logged in")
+        raise HTTPException(status_code=401, detail="User is not logged in")
+
     try:
         # Save the uploaded image
         image_path = os.path.join(UPLOAD_DIR, image.filename)
@@ -232,7 +237,7 @@ async def submit_post(
             shutil.copyfileobj(image.file, f)
 
         # Prepare payload
-        payload = {"image": f"/uploads/{image.filename}", "text": text, "user": request.session.get("user")}
+        payload = {"image": f"/uploads/{image.filename}", "text": text, "username": request.session.get("username")}
         logger.info(f"Payload sent to /posts: {payload}")
 
         # Send the data to /post
@@ -262,7 +267,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
     user = UserService.authenticate_user(get_db(),username, password)
     if not user:
         return templates.TemplateResponse("login.html", {"request": request, "login_error": "Invalid username or password."})
-    request.session["user"] = username
+    request.session["username"] = username
     return RedirectResponse("/", status_code=303)
 
 @app.post("/register")
@@ -283,8 +288,10 @@ async def login(request: Request, username: str = Form(...), password: str = For
         logger.error(f"Error in /login: {e}")
         raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
     
-    request.session["user"] = username
+    request.session["username"] = username
+    logger.info(f"User {username} registered successfully")
 
     return RedirectResponse("/", status_code=303)
+
 
 # End frontend
