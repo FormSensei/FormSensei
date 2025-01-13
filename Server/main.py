@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
-from Server.db import get_db, init_db
+from db import get_db, init_db
 from schemas.post_schema import PostCreate, PostResponse, PostBase
 from services.post_service import PostService
 from schemas.user_schema import UserCreate, UserResponse
@@ -9,12 +9,9 @@ from services.user_service import UserService
 from contextlib import asynccontextmanager
 from schemas.comment_schema import CommentCreate, CommentResponse
 from services.comment_service import CommentService
-from fastapi import File, UploadFile
-import shutil
-import os
-
-# For Frontend
-
+from schemas.authentication_schema import Authentication, AuthenticationResponse
+from services.authentication_service import AuthenticationService
+import logging
 
 # Setup logging
 logging.basicConfig(
@@ -38,12 +35,6 @@ async def lifespan(app: FastAPI):
     #await close_db()
 
 app = FastAPI(lifespan=lifespan)
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
-
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-app.add_middleware(SessionMiddleware, secret_key="test123", max_age=None)
 
 # posts
 
@@ -175,4 +166,19 @@ async def post_image():
 async def get_image(file_name: str):
     raise HTTPException(status_code=501, detail="The image retrieval functionality is not yet supported.")
 
-# For Frontend
+# authentication
+
+@app.post("/api/v1/authenticate", response_model=AuthenticationResponse, status_code=201)
+async def authenticate(authentication: Authentication, db=Depends(get_db)):
+    logger.info(f"Trying to authenticate user: {authentication.username}")
+    try:
+        result = AuthenticationService.authenticate_user(db, authentication)  # Now returns a dict with id and time_created
+        response = {
+            "valid": result
+        }
+        logger.info(f"Authentication response: {response}")
+        return response
+    except Exception as e:
+        logger.error(f"Error authenticating: {e}")
+        raise HTTPException(status_code=500, detail="Error authenticating.")
+    

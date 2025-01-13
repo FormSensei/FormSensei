@@ -22,9 +22,9 @@ services:        # Define the services (containers)
       context: Server # Use the current directory as the build context
       dockerfile: Dockerfile # Use the specified Dockerfile
     ports:       # Map ports between host and container
-      - "8080:8080" # Map port 8000 on the host to port 8000 in the container
+      - "8080:8080" # Map port 8080 on the host to port 8080 in the container
     volumes:     # Bind-mount local files into the container
-      - .:/app   # Mount the current directory into the container at /app
+      - ./Server:/app   # Mount the current directory into the container at /app
     depends_on:
       db:
         condition: service_healthy
@@ -39,10 +39,7 @@ services:        # Define the services (containers)
     ports:       # Map ports between host and container
       - "8000:8000" # Map port 8000 on the host to port 8000 in the container
     volumes:     # Bind-mount local files into the container
-      - .:/app   # Mount the current directory into the container at /app
-    depends_on:
-      fastapi-app:
-        condition: service_healthy
+      - ./Frontend:/app   # Mount the current directory into the container at /app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Override default CMD
   
 volumes:
