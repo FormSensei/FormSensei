@@ -143,13 +143,35 @@ def search_users(
 @app.post("/api/v1/comment", response_model=CommentResponse, status_code=201)
 def create_comment(comment: CommentCreate, db=Depends(get_db)):
     logger.info(f"Adding comment: {comment}")
-    comment_id = CommentService.add_comment(db, comment)
-    return {"id": comment_id, **comment.dict(), "timestamp": "now"}
+    try:
+        result = CommentService.add_comment(db, comment)  # Now returns a dict with id and time_created
+        response = {
+            "id": result["id"],
+            "post_id": comment.post_id,
+            "text": comment.text,
+            "username": comment.username,
+            "time_created": result["time_created"],  # Include time_created from DB
+        }
+        logger.info(f"Comment response: {response}")
+        return response
+    except Exception as e:
+        logger.error(f"Error adding comment: {e}")
+        raise HTTPException(status_code=500, detail="Error adding comment.")
+
 
 @app.get("/api/v1/comment/{post_id}", response_model=List[CommentResponse])
 def get_comments(post_id: int, db=Depends(get_db)):
     logger.info(f"Fetching comments for post ID: {post_id}")
-    return CommentService.get_comments_by_post(db, post_id)
+    try:
+        comments = CommentService.get_comments_by_post(db, post_id)
+        if not comments:
+            logger.warning(f"No comments found for post ID: {post_id}")
+        else:
+            logger.info(f"Comments fetched for post ID {post_id}: {comments}")
+        return comments
+    except Exception as e:
+        logger.error(f"Error fetching comments for post ID {post_id}: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching comments.")
 
 # images (placeholders)
 
@@ -199,19 +221,26 @@ def read_root(request: Request):
 
 @app.post("/add-comment")
 def add_comment(request: Request, post_id: int = Form(...), text: str = Form(...)):
-    user = request.session.get("user")
+    user = request.session.get("username")
+    if not user:
+        logger.error("User is not logged in. Cannot add comment.")
+        raise HTTPException(status_code=401, detail="User is not logged in")
+
     logger.info(f"Adding comment via frontend: post_id={post_id}, user={user}")
     try:
         response = requests.post(
             'http://127.0.0.1:8000/api/v1/comment',
-            json={"post_id": post_id, "text": text, "user": request.session.get("user")}
+            json={"post_id": post_id, "text": text, "username": user}
         )
         if response.status_code == 201:
             logger.info("Comment added successfully via frontend")
+        else:
+            logger.error(f"Error adding comment: {response.text}")
     except Exception as e:
         logger.error(f"Error adding comment via frontend: {e}")
     
     return RedirectResponse("/", status_code=303)
+
 
 @app.get("/submit", response_class=HTMLResponse)
 def submit_post_form(request: Request):
@@ -225,6 +254,11 @@ async def submit_post(
     image: UploadFile = File(...),
     text: str = Form(...)
 ):
+    username = request.session.get("username")
+    if not username:
+        logger.error("User is not logged in")
+        raise HTTPException(status_code=401, detail="User is not logged in")
+
     try:
         # Save the uploaded image
         image_path = os.path.join(UPLOAD_DIR, image.filename)
@@ -232,7 +266,7 @@ async def submit_post(
             shutil.copyfileobj(image.file, f)
 
         # Prepare payload
-        payload = {"image": f"/uploads/{image.filename}", "text": text, "user": request.session.get("user")}
+        payload = {"image": f"/uploads/{image.filename}", "text": text, "username": request.session.get("username")}
         logger.info(f"Payload sent to /posts: {payload}")
 
         # Send the data to /post
@@ -262,7 +296,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
     user = UserService.authenticate_user(get_db(),username, password)
     if not user:
         return templates.TemplateResponse("login.html", {"request": request, "login_error": "Invalid username or password."})
-    request.session["user"] = username
+    request.session["username"] = username
     return RedirectResponse("/", status_code=303)
 
 @app.post("/register")
@@ -283,8 +317,10 @@ async def login(request: Request, username: str = Form(...), password: str = For
         logger.error(f"Error in /login: {e}")
         raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
     
-    request.session["user"] = username
+    request.session["username"] = username
+    logger.info(f"User {username} registered successfully")
 
     return RedirectResponse("/", status_code=303)
+
 
 # End frontend

@@ -8,7 +8,7 @@ class UserService:
         cursor = db.cursor()
         try:
             cursor.execute(
-                "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
                 (user.username, user.email, user.password)
             )
             db.commit()
@@ -20,7 +20,7 @@ class UserService:
     @staticmethod
     def get_user_by_id(db: Connection, user_id: int) -> Optional[UserResponse]:
         cursor = db.cursor()
-        cursor.execute("SELECT id, username, email FROM users WHERE id = ?", (user_id,))
+        cursor.execute("SELECT id, username, email FROM users WHERE id = %s", (user_id,))
         row = cursor.fetchone()
         if row:
             return UserResponse(**row)
@@ -32,13 +32,13 @@ class UserService:
         params = []
 
         if username:
-            query += " AND username LIKE ?"
+            query += " AND username LIKE %s"
             params.append(f"%{username}%")
         if email:
-            query += " AND email LIKE ?"
+            query += " AND email LIKE %s"
             params.append(f"%{email}%")
 
-        query += " LIMIT ? OFFSET ?"
+        query += " LIMIT %s OFFSET %s"
         params.extend([limit, (page - 1) * limit])
 
         cursor = db.cursor()
@@ -50,7 +50,7 @@ class UserService:
     def authenticate_user(db: Connection, username: str, password: str):
         cursor = db.cursor()
         try:
-            cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+            cursor.execute("SELECT password FROM users WHERE username = %s", (username,))
             row = cursor.fetchone()
             return row[0] == password
         except Exception as e:

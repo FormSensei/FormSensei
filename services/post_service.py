@@ -10,7 +10,7 @@ class PostService:
     def add_post(db: Connection, post: PostCreate) -> int:
         cursor = db.cursor()
         cursor.execute(
-            "INSERT INTO posts (image, text, user) VALUES (?, ?, ?)",
+            "INSERT INTO posts (image, text, username) VALUES (%s, %s, %s)",
             (post.image, post.text, post.user)
         )
         db.commit()
@@ -19,10 +19,10 @@ class PostService:
     @staticmethod
     def get_post(db: Connection, post_id: int) -> Optional[PostResponse]:
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM posts WHERE id = ?", (post_id,))
+        cursor.execute("SELECT * FROM posts WHERE id = %s", (post_id,))
         row = cursor.fetchone()
         if row:
-            return PostResponse(**row)
+            return PostResponse(**dict(zip([column[0] for column in cursor.description], row)))
         return None
 
     @staticmethod
@@ -31,10 +31,10 @@ class PostService:
         logger.info(f"Fetching posts from DB with offset={offset}, limit={limit}")
         try:
             cursor = db.cursor()
-            cursor.execute("SELECT * FROM posts ORDER BY time_created DESC LIMIT ? OFFSET ?", (limit, offset))
+            cursor.execute("SELECT * FROM posts ORDER BY time_created DESC LIMIT %s OFFSET %s", (limit, offset))
             rows = cursor.fetchall()
             logger.info(f"Posts fetched from DB: {len(rows)}")
-            return [PostResponse(**row) for row in rows]
+            return [PostResponse(**dict(zip([column[0] for column in cursor.description], row))) for row in rows]
         except Exception as e:
             logger.error(f"Error querying posts from DB: {e}")
             raise
