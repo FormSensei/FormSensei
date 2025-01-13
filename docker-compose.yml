@@ -19,17 +19,27 @@ services:        # Define the services (containers)
 
   fastapi-app:   # Name of the service
     build:       # Build the Docker image
-      context: . # Use the current directory as the build context
+      context: Server # Use the current directory as the build context
       dockerfile: Dockerfile # Use the specified Dockerfile
     ports:       # Map ports between host and container
-      - "8000:8000" # Map port 8000 on the host to port 8000 in the container
+      - "8080:8080" # Map port 8080 on the host to port 8080 in the container
     volumes:     # Bind-mount local files into the container
-      - .:/app   # Mount the current directory into the container at /app
+      - ./Server:/app   # Mount the current directory into the container at /app
     depends_on:
       db:
         condition: service_healthy
     environment: # Correctly placed at the same level as depends_on
       DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+    command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload # Override default CMD
+
+  web-app:   # Name of the service
+    build:       # Build the Docker image
+      context: Frontend # Use the current directory as the build context
+      dockerfile: Dockerfile # Use the specified Dockerfile
+    ports:       # Map ports between host and container
+      - "8000:8000" # Map port 8000 on the host to port 8000 in the container
+    volumes:     # Bind-mount local files into the container
+      - ./Frontend:/app   # Mount the current directory into the container at /app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Override default CMD
   
 volumes:
