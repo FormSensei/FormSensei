@@ -16,6 +16,7 @@ class TestSocialMediaApp(unittest.TestCase):
     def test_retrieve_latest_post(self):
         
         self.assertEqual(1, 1)
+        
 
 if __name__ == '__main__':
     unittest.main()
