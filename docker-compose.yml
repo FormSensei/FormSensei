@@ -1,5 +1,6 @@
-version: "3.9"  # Docker Compose file format version
+#version: "3.9"  # Docker Compose file format version
 services:        # Define the services (containers)  
+
   db:
     image: postgres:latest
     environment:
@@ -28,9 +29,35 @@ services:        # Define the services (containers)
     depends_on:
       db:
         condition: service_healthy
-    environment: # Correctly placed at the same level as depends_on
+      rabbitmq:
+        condition: service_started
+    environment: 
       DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/ # RabbitMQ connection URL
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Override default CMD
   
+  rabbitmq:
+    image: rabbitmq:3-management # RabbitMQ with management interface
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # Default RabbitMQ port
+      - "15672:15672" # RabbitMQ management interface port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  image-resizer:
+    build:
+      context: ./image_resizer  # Path to the image resizer service
+      dockerfile: Dockerfile    # Dockerfile for the image resizer service
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    volumes:
+      - ./uploads:/uploads       # Shared directory for images
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/ # RabbitMQ connection URL
+
 volumes:
   db_data:
+

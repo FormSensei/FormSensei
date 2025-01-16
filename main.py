@@ -24,6 +24,12 @@ import requests
 import logging
 import httpx
 
+#For message service
+import pika
+from fastapi.responses import FileResponse
+
+
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,  # Log level
@@ -173,7 +179,61 @@ def get_comments(post_id: int, db=Depends(get_db)):
         logger.error(f"Error fetching comments for post ID {post_id}: {e}")
         raise HTTPException(status_code=500, detail="Error fetching comments.")
 
+
+# For message service
+
+# RabbitMQ setup
+QUEUE_NAME = "image_resize"
+
+def send_message_to_rabbitmq(file_path: str):
+    """Send a message to RabbitMQ to trigger image resizing."""
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
+        channel = connection.channel()
+        channel.queue_declare(queue=QUEUE_NAME)
+        channel.basic_publish(exchange="", routing_key=QUEUE_NAME, body=file_path)
+        logger.info(f"Message sent to RabbitMQ for resizing: {file_path}")
+        connection.close()
+    except Exception as e:
+        logger.error(f"Failed to send message to RabbitMQ: {e}")
+        raise HTTPException(status_code=500, detail="Failed to enqueue image resize task.")
+
+
 # images (placeholders)
+@app.post("/api/v1/image")
+async def upload_image(image: UploadFile = File(...)):
+    """Upload an image and enqueue it for resizing."""
+    file_path = os.path.join(UPLOAD_DIR, image.filename)
+    try:
+        # Save the uploaded image
+        with open(file_path, "wb") as f:
+            shutil.copyfileobj(image.file, f)
+        logger.info(f"Image saved: {file_path}")
+
+        # Send message to RabbitMQ
+        send_message_to_rabbitmq(file_path)
+
+        return {"message": "Image uploaded and resize task enqueued.", "image_path": file_path}
+    except Exception as e:
+        logger.error(f"Error uploading image: {e}")
+        raise HTTPException(status_code=500, detail="Error uploading image.")
+
+@app.get("/api/v1/image/reduced/{file_name}")
+async def get_reduced_image(file_name: str):
+    """Serve the reduced-size image."""
+    reduced_path = os.path.join(REDUCED_DIR, file_name)
+    if not os.path.exists(reduced_path):
+        raise HTTPException(status_code=404, detail="Reduced-size image not found.")
+    return FileResponse(reduced_path)
+
+@app.get("/api/v1/image/full/{file_name}")
+async def get_full_image(file_name: str):
+    """Serve the full-size image."""
+    file_path = os.path.join(UPLOAD_DIR, file_name)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Full-size image not found.")
+    return FileResponse(file_path)
+
 
 @app.post("/api/v1/image")
 async def post_image():
