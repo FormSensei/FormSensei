@@ -1,6 +1,5 @@
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Query
-from fastapi.responses import JSONResponse
 from db import get_db, init_db
 from schemas.post_schema import PostCreate, PostResponse, PostBase
 from services.post_service import PostService
@@ -11,7 +10,16 @@ from schemas.comment_schema import CommentCreate, CommentResponse
 from services.comment_service import CommentService
 from schemas.authentication_schema import Authentication, AuthenticationResponse
 from services.authentication_service import AuthenticationService
+from fastapi import File, UploadFile
+from fastapi.staticfiles import StaticFiles
+import shutil
+import os
+
 import logging
+
+#For message service
+import pika
+from fastapi.responses import FileResponse
 
 # Setup logging
 logging.basicConfig(
@@ -35,6 +43,13 @@ async def lifespan(app: FastAPI):
     #await close_db()
 
 app = FastAPI(lifespan=lifespan)
+
+UPLOAD_DIR = "uploads/full"
+REDUCED_DIR = "uploads/reduced"
+#os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 
 # posts
 
@@ -78,7 +93,7 @@ def search_posts(query: str, db=Depends(get_db)):
 @app.get("/api/v1/post", response_model=List[PostResponse])
 def list_posts(
     page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1),
+    limit: int = Query(50, ge=1),
     db=Depends(get_db)
 ):
     logger.info(f"Entering /post endpoint with page={page}, limit={limit}")
@@ -156,15 +171,61 @@ def get_comments(post_id: int, db=Depends(get_db)):
         logger.error(f"Error fetching comments for post ID {post_id}: {e}")
         raise HTTPException(status_code=500, detail="Error fetching comments.")
 
+# For message service
+
+# RabbitMQ setup
+QUEUE_NAME = "image_resize"
+
+def send_message_to_rabbitmq(file_path: str):
+    """Send a message to RabbitMQ to trigger image resizing."""
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
+        channel = connection.channel()
+        channel.queue_declare(queue=QUEUE_NAME)
+        channel.basic_publish(exchange="", routing_key=QUEUE_NAME, body=file_path)
+        logger.info(f"Message sent to RabbitMQ for resizing: {file_path}")
+        connection.close()
+    except Exception as e:
+        logger.error(f"Failed to send message to RabbitMQ: {e}")
+        #raise HTTPException(status_code=500, detail="Failed to enqueue image resize task.")
+
+
 # images (placeholders)
-
 @app.post("/api/v1/image")
-async def post_image():
-    raise HTTPException(status_code=501, detail="The image upload functionality is not yet supported.")
+async def upload_image(image: UploadFile = File(...)):
+    """Upload an image and enqueue it for resizing."""
+    file_path = os.path.join(UPLOAD_DIR, image.filename)
+    try:
+        # Save the uploaded image
+        with open(file_path, "wb") as f:
+            shutil.copyfileobj(image.file, f)
+        logger.info(f"Image saved: {file_path}")
 
-@app.get("/api/v1/image/{file_name}")
-async def get_image(file_name: str):
-    raise HTTPException(status_code=501, detail="The image retrieval functionality is not yet supported.")
+        # Send message to RabbitMQ
+        send_message_to_rabbitmq(image.filename)
+
+        return {"message": "Image uploaded and resize task enqueued.", "image_path": image.filename}
+    except Exception as e:
+        logger.error(f"Error uploading image: {e}")
+        raise HTTPException(status_code=500, detail="Error uploading image.")
+
+@app.get("/api/v1/image/reduced/{file_name}")
+async def get_reduced_image(file_name: str):
+    """Serve the reduced-size image."""
+    reduced_path = os.path.join(REDUCED_DIR, file_name)
+    if not os.path.exists(reduced_path):
+        raise HTTPException(status_code=404, detail="Reduced-size image not found.")
+    return FileResponse(reduced_path)
+
+@app.get("/api/v1/image/full/{file_name}")
+async def get_full_image(file_name: str):
+    """Serve the full-size image."""
+    logger.info(f"Trying to get image: {file_name}")
+    file_path = os.path.join(UPLOAD_DIR, file_name)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Full-size image not found.")
+    return FileResponse(file_path)
+
 
 # authentication
 

@@ -3,8 +3,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi import File, UploadFile
+from fastapi.staticfiles import StaticFiles
 import requests
 import logging
 import httpx
@@ -22,8 +22,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
 UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
+#os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
@@ -50,6 +52,17 @@ def read_root(request: Request):
                     logger.info(f"Comments: {comments_response.json()}")
                 else:
                     post['comments'] = []
+
+                # Construct image URL if image is present
+                image_path = post.get("image")
+                if image_path:
+                    logger.info(f"Image: {image_path}")
+                    post['image_url'] = f"http://localhost:8080/api/v1/image/reduced/{os.path.basename(image_path)}"
+                    post['full_image_url'] = f"http://localhost:8080/api/v1/image/full/{os.path.basename(image_path)}"
+                else:
+                    post['image_url'] = None
+                    post['full_image_url'] = None
+                
         else:
             logger.error(f"Error code fetching posts: {response.status_code}")
             posts = []
@@ -105,23 +118,52 @@ async def submit_post(
         raise HTTPException(status_code=401, detail="User is not logged in")
 
     try:
-        # Save the uploaded image
-        image_path = os.path.join(UPLOAD_DIR, image.filename)
-        with open(image_path, "wb") as f:
-            shutil.copyfileobj(image.file, f)
 
-        # Prepare payload
-        payload = {"image": f"/uploads/{image.filename}", "text": text, "username": request.session.get("username")}
-        logger.info(f"Payload sent to /posts: {payload}")
+        # Upload the image directly to the image API
+        files = {
+            "image": (image.filename, image.file, image.content_type),
+        }
 
-        # Send the data to /post
         async with httpx.AsyncClient() as client:
-            response = await client.post('http://fastapi-app:8080/api/v1/post', json=payload)
-        logger.info(f"Backend /posts response: {response.status_code}, {response.text}")
+            image_response = await client.post(
+                'http://fastapi-app:8080/api/v1/image',
+                files=files,
+            )
 
-        if response.status_code != 200:
-            logger.error(f"Error from /post: {response.text}")
-            raise HTTPException(status_code=500, detail=f"Backend error: {response.text}")
+        # Log the image upload response
+        logger.info(f"Image upload response: {image_response.status_code}, {image_response.text}")
+
+        if image_response.status_code != 200:
+            logger.error(f"Error uploading image: {image_response.text}")
+            raise HTTPException(status_code=500, detail=f"Error uploading image: {image_response.text}")
+
+        # Extract the image path from the response
+        image_data = image_response.json()
+        image_path = image_data.get("image_path")
+        if not image_path:
+            logger.error("Image path not returned from the API")
+            raise HTTPException(status_code=500, detail="Image path not returned from the API")
+
+        # Prepare the post payload with the uploaded image path
+        post_payload = {
+            "text": text,
+            "username": username,
+            "image": image_path,
+        }
+
+        # Submit the post data to the post API
+        async with httpx.AsyncClient() as client:
+            post_response = await client.post(
+                'http://fastapi-app:8080/api/v1/post',
+                json=post_payload,
+            )
+
+        logger.info(f"Post submission response: {post_response.status_code}, {post_response.text}")
+
+        if post_response.status_code != 200:
+            logger.error(f"Error submitting post: {post_response.text}")
+            raise HTTPException(status_code=500, detail=f"Error submitting post: {post_response.text}")
+
 
     except Exception as e:
         logger.error(f"Error in /submit: {e}")
@@ -175,7 +217,8 @@ async def login(request: Request, username: str = Form(...), password: str = For
         
     except Exception as e:
         logger.error(f"Error in /register: {e}")
-        raise HTTPException(status_code=500, detail=f"Error sregistering: {e}")
+        raise HTTPException(status_code=500, detail=f"Error registering: {e}")
+
     
     request.session["username"] = username
     logger.info(f"User {username} registered successfully")
