@@ -357,7 +357,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
     if not user:
         return templates.TemplateResponse("login.html", {"request": request, "login_error": "Invalid username or password."})
     request.session["username"] = username
-    return RedirectResponse("/", status_code=303)
+    return RedirectResponse("/submit", status_code=303)
 
 @app.post("/register")
 async def login(request: Request, username: str = Form(...), password: str = Form(...), email: str = Form(...)):
