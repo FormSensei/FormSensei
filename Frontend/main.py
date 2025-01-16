@@ -23,12 +23,13 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+
 UPLOAD_DIR = "uploads"
 #os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
+
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(SessionMiddleware, secret_key="test123", max_age=None)
-
 
 # Initialize templates
 templates = Jinja2Templates(directory="templates")
@@ -163,6 +164,7 @@ async def submit_post(
             logger.error(f"Error submitting post: {post_response.text}")
             raise HTTPException(status_code=500, detail=f"Error submitting post: {post_response.text}")
 
+
     except Exception as e:
         logger.error(f"Error in /submit: {e}")
         raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
@@ -216,6 +218,7 @@ async def login(request: Request, username: str = Form(...), password: str = For
     except Exception as e:
         logger.error(f"Error in /register: {e}")
         raise HTTPException(status_code=500, detail=f"Error registering: {e}")
+
     
     request.session["username"] = username
     logger.info(f"User {username} registered successfully")

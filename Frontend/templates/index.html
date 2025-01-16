@@ -48,6 +48,7 @@
         {% for post in posts %}
         <li>
             <strong>{{ post.username }}</strong>: {{ post.text }}<br> <!-- Corrected "user" to "username" -->
+
             <img src="{{ post.image_url }}" data-full-image-url="{{ post.full_image_url }}" alt="Post image" style="width: 200px;">
         
             <!-- Display Comments -->

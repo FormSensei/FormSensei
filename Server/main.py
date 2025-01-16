@@ -21,8 +21,6 @@ import logging
 import pika
 from fastapi.responses import FileResponse
 
-
-
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,  # Log level
@@ -45,11 +43,13 @@ async def lifespan(app: FastAPI):
     #await close_db()
 
 app = FastAPI(lifespan=lifespan)
+
 UPLOAD_DIR = "uploads/full"
 REDUCED_DIR = "uploads/reduced"
 #os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 
 # posts
 
@@ -171,7 +171,6 @@ def get_comments(post_id: int, db=Depends(get_db)):
         logger.error(f"Error fetching comments for post ID {post_id}: {e}")
         raise HTTPException(status_code=500, detail="Error fetching comments.")
 
-
 # For message service
 
 # RabbitMQ setup
@@ -226,6 +225,7 @@ async def get_full_image(file_name: str):
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Full-size image not found.")
     return FileResponse(file_path)
+
 
 # authentication
 
