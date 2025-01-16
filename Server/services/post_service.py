@@ -11,7 +11,7 @@ class PostService:
         cursor = db.cursor()
         cursor.execute(
             "INSERT INTO posts (image, text, username) VALUES (%s, %s, %s)",
-            (post.image, post.text, post.user)
+            (post.image, post.text, post.username)
         )
         db.commit()
         return cursor.lastrowid

@@ -1,5 +1,6 @@
-version: "3.9"  # Docker Compose file format version
+#version: "3.9"  # Docker Compose file format version
 services:        # Define the services (containers)  
+
   db:
     image: postgres:latest
     environment:
@@ -19,18 +20,62 @@ services:        # Define the services (containers)
 
   fastapi-app:   # Name of the service
     build:       # Build the Docker image
-      context: . # Use the current directory as the build context
+      context: ./Server # Use the current directory as the build context
+      dockerfile: Dockerfile # Use the specified Dockerfile
+    ports:       # Map ports between host and container
+      - "8080:8080" # Map port 8080 on the host to port 8080 in the container
+    volumes:     # Bind-mount local files into the container
+      - ./Server:/app   # Mount the current directory into the container at /app
+      - ./uploads/full:/app/uploads/full
+      - ./uploads/reduced:/app/uploads/reduced
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    environment: 
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/ # RabbitMQ connection URL
+    command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload # Override default CMD
+  
+  web-app:   # Name of the service
+    build:       # Build the Docker image
+      context: ./Frontend # Use the current directory as the build context
       dockerfile: Dockerfile # Use the specified Dockerfile
     ports:       # Map ports between host and container
       - "8000:8000" # Map port 8000 on the host to port 8000 in the container
     volumes:     # Bind-mount local files into the container
-      - .:/app   # Mount the current directory into the container at /app
+      - ./Frontend:/app   # Mount the current directory into the container at /app
+      - ./uploads/full:/app/uploads/full
+      - ./uploads/reduced:/app/uploads/reduced
     depends_on:
-      db:
-        condition: service_healthy
-    environment: # Correctly placed at the same level as depends_on
-      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydb
+      fastapi-app:
+        condition: service_started
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Override default CMD
-  
+
+  rabbitmq:
+    image: rabbitmq:3-management # RabbitMQ with management interface
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # Default RabbitMQ port
+      - "15672:15672" # RabbitMQ management interface port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  image-resizer:
+    build:
+      context: ./image_resizer  # Path to the image resizer service
+      dockerfile: Dockerfile    # Dockerfile for the image resizer service
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    volumes:
+      - ./uploads/full:/app/uploads/full
+      - ./uploads/reduced:/app/uploads/reduced       # Shared directory for images
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/ # RabbitMQ connection URL
+
 volumes:
   db_data:
+

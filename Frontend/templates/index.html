@@ -48,7 +48,8 @@
         {% for post in posts %}
         <li>
             <strong>{{ post.username }}</strong>: {{ post.text }}<br> <!-- Corrected "user" to "username" -->
-            <img src="{{ post.image }}" alt="Post image" style="width: 200px;">
+
+            <img src="{{ post.image_url }}" data-full-image-url="{{ post.full_image_url }}" alt="Post image" style="width: 200px;">
         
             <!-- Display Comments -->
             <h3>Comments</h3>
@@ -87,5 +88,23 @@
     <h1>Welcome</h1>
     <p>Please <a href="/login">log in</a> to view posts and interact with the content.</p>
     {% endif %}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const images = document.querySelectorAll("[data-full-image-url]");
+
+            images.forEach((img) => {
+                const fullImageUrl = img.getAttribute("data-full-image-url");
+
+                // Create a new Image object to preload the full-size image
+                const fullImage = new Image();
+                fullImage.onload = () => {
+                    img.src = fullImageUrl; // Replace the reduced-size image with the full-size image
+                };
+                fullImage.src = fullImageUrl;
+            });
+        });
+    </script>
+
 </body>
 </html>
