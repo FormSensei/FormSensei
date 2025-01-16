@@ -1,6 +1,5 @@
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Query
-from fastapi.responses import JSONResponse
 from db import get_db, init_db
 from schemas.post_schema import PostCreate, PostResponse, PostBase
 from services.post_service import PostService
@@ -9,20 +8,14 @@ from services.user_service import UserService
 from contextlib import asynccontextmanager
 from schemas.comment_schema import CommentCreate, CommentResponse
 from services.comment_service import CommentService
+from schemas.authentication_schema import Authentication, AuthenticationResponse
+from services.authentication_service import AuthenticationService
 from fastapi import File, UploadFile
+from fastapi.staticfiles import StaticFiles
 import shutil
 import os
-from fastapi.staticfiles import StaticFiles
 
-# For Frontend
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from starlette.responses import RedirectResponse
-from starlette.middleware.sessions import SessionMiddleware
-import requests
 import logging
-import httpx
 
 #For message service
 import pika
@@ -52,12 +45,11 @@ async def lifespan(app: FastAPI):
     #await close_db()
 
 app = FastAPI(lifespan=lifespan)
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
+UPLOAD_DIR = "uploads/full"
+REDUCED_DIR = "uploads/reduced"
+#os.makedirs(UPLOAD_DIR, exist_ok=True)  # Create the directory if it doesn't exist
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-app.add_middleware(SessionMiddleware, secret_key="test123", max_age=None)
 
 # posts
 
@@ -101,7 +93,7 @@ def search_posts(query: str, db=Depends(get_db)):
 @app.get("/api/v1/post", response_model=List[PostResponse])
 def list_posts(
     page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1),
+    limit: int = Query(50, ge=1),
     db=Depends(get_db)
 ):
     logger.info(f"Entering /post endpoint with page={page}, limit={limit}")
@@ -196,7 +188,7 @@ def send_message_to_rabbitmq(file_path: str):
         connection.close()
     except Exception as e:
         logger.error(f"Failed to send message to RabbitMQ: {e}")
-        raise HTTPException(status_code=500, detail="Failed to enqueue image resize task.")
+        #raise HTTPException(status_code=500, detail="Failed to enqueue image resize task.")
 
 
 # images (placeholders)
@@ -211,9 +203,9 @@ async def upload_image(image: UploadFile = File(...)):
         logger.info(f"Image saved: {file_path}")
 
         # Send message to RabbitMQ
-        send_message_to_rabbitmq(file_path)
+        send_message_to_rabbitmq(image.filename)
 
-        return {"message": "Image uploaded and resize task enqueued.", "image_path": file_path}
+        return {"message": "Image uploaded and resize task enqueued.", "image_path": image.filename}
     except Exception as e:
         logger.error(f"Error uploading image: {e}")
         raise HTTPException(status_code=500, detail="Error uploading image.")
@@ -229,158 +221,25 @@ async def get_reduced_image(file_name: str):
 @app.get("/api/v1/image/full/{file_name}")
 async def get_full_image(file_name: str):
     """Serve the full-size image."""
+    logger.info(f"Trying to get image: {file_name}")
     file_path = os.path.join(UPLOAD_DIR, file_name)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Full-size image not found.")
     return FileResponse(file_path)
 
+# authentication
 
-@app.post("/api/v1/image")
-async def post_image():
-    raise HTTPException(status_code=501, detail="The image upload functionality is not yet supported.")
-
-@app.get("/api/v1/image/{file_name}")
-async def get_image(file_name: str):
-    raise HTTPException(status_code=501, detail="The image retrieval functionality is not yet supported.")
-
-# For Frontend
-# Initialize templates
-templates = Jinja2Templates(directory="templates")
-
-#modified for comments
-@app.get("/", response_class=HTMLResponse)
-def read_root(request: Request):
-    logger.info("Endpoint: GET / (frontend)")
+@app.post("/api/v1/authenticate", response_model=AuthenticationResponse, status_code=201)
+async def authenticate(authentication: Authentication, db=Depends(get_db)):
+    logger.info(f"Trying to authenticate user: {authentication.username}")
     try:
-        # Fetch posts and their comments
-        response = requests.get('http://127.0.0.1:8000/api/v1/post')
-        if response.status_code == 200:
-            posts = response.json()
-            for post in posts:
-                # Fetch comments for each post
-                comments_response = requests.get(f"http://127.0.0.1:8000/api/v1/comment/{post['id']}")
-                logger.info(f"Fetched comments: {comments_response.status_code}")
-                if comments_response.status_code == 200:
-                    post['comments'] = comments_response.json()
-                    logger.info(f"Comments: {comments_response.json()}")
-                else:
-                    post['comments'] = []
-        else:
-            logger.error(f"Error code fetching posts: {response.status_code}")
-            posts = []
+        result = AuthenticationService.authenticate_user(db, authentication)  # Now returns a dict with id and time_created
+        response = {
+            "valid": result
+        }
+        logger.info(f"Authentication response: {response}")
+        return response
     except Exception as e:
-        logger.error(f"Error fetching posts: {e}")
-        posts = []
+        logger.error(f"Error authenticating: {e}")
+        raise HTTPException(status_code=500, detail="Error authenticating.")
     
-    # Render the template with posts and comments
-    is_logged_in = False
-    if request.session.get("user"):
-        is_logged_in = True
-    return templates.TemplateResponse("index.html", {"request": request, "posts": posts, "is_logged_in": is_logged_in})
-
-
-@app.post("/add-comment")
-def add_comment(request: Request, post_id: int = Form(...), text: str = Form(...)):
-    user = request.session.get("username")
-    if not user:
-        logger.error("User is not logged in. Cannot add comment.")
-        raise HTTPException(status_code=401, detail="User is not logged in")
-
-    logger.info(f"Adding comment via frontend: post_id={post_id}, user={user}")
-    try:
-        response = requests.post(
-            'http://127.0.0.1:8000/api/v1/comment',
-            json={"post_id": post_id, "text": text, "username": user}
-        )
-        if response.status_code == 201:
-            logger.info("Comment added successfully via frontend")
-        else:
-            logger.error(f"Error adding comment: {response.text}")
-    except Exception as e:
-        logger.error(f"Error adding comment via frontend: {e}")
-    
-    return RedirectResponse("/", status_code=303)
-
-
-@app.get("/submit", response_class=HTMLResponse)
-def submit_post_form(request: Request):
-    logger.info("Endpoint: GET /submit (frontend)")
-    # Render the submit.html form
-    return templates.TemplateResponse("submit.html", {"request": request})
-
-@app.post("/submit")
-async def submit_post(
-    request: Request,
-    image: UploadFile = File(...),
-    text: str = Form(...)
-):
-    username = request.session.get("username")
-    if not username:
-        logger.error("User is not logged in")
-        raise HTTPException(status_code=401, detail="User is not logged in")
-
-    try:
-        # Save the uploaded image
-        image_path = os.path.join(UPLOAD_DIR, image.filename)
-        with open(image_path, "wb") as f:
-            shutil.copyfileobj(image.file, f)
-
-        # Prepare payload
-        payload = {"image": f"/uploads/{image.filename}", "text": text, "username": request.session.get("username")}
-        logger.info(f"Payload sent to /posts: {payload}")
-
-        # Send the data to /post
-        async with httpx.AsyncClient() as client:
-            response = await client.post('http://127.0.0.1:8000/api/v1/post', json=payload)
-        logger.info(f"Backend /posts response: {response.status_code}, {response.text}")
-
-        if response.status_code != 200:
-            logger.error(f"Error from /post: {response.text}")
-            raise HTTPException(status_code=500, detail=f"Backend error: {response.text}")
-
-    except Exception as e:
-        logger.error(f"Error in /submit: {e}")
-        raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
-
-    return RedirectResponse("/", status_code=303)
-
-@app.get("/login", response_class=HTMLResponse)
-def login_form(request: Request):
-    logger.info("Endpoint: GET /login (frontend)")
-    # Render the submit.html form
-    return templates.TemplateResponse("login.html", {"request": request})
-
-@app.post("/login")
-async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    logger.info("Endpoint: POST /login (frontend)")
-    user = UserService.authenticate_user(get_db(),username, password)
-    if not user:
-        return templates.TemplateResponse("login.html", {"request": request, "login_error": "Invalid username or password."})
-    request.session["username"] = username
-    return RedirectResponse("/", status_code=303)
-
-@app.post("/register")
-async def login(request: Request, username: str = Form(...), password: str = Form(...), email: str = Form(...)):
-    logger.info("Endpoint: POST /register (frontend)")
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                'http://127.0.0.1:8000/api/v1/user',
-                json={"username": username, "email": email, "password": password}
-            )
-
-        if response.status_code != 201:
-            logger.error(f"Error from /user: {response.text}")
-            raise HTTPException(status_code=500, detail=f"Backend error: {response.text}")
-        
-    except Exception as e:
-        logger.error(f"Error in /login: {e}")
-        raise HTTPException(status_code=500, detail=f"Error submitting post: {e}")
-    
-    request.session["username"] = username
-    logger.info(f"User {username} registered successfully")
-
-    return RedirectResponse("/", status_code=303)
-
-
-# End frontend
